@@ -1,12 +1,15 @@
-import resources.lib.config.features as provider
+import routing
 
-from xbmcswift2 import Plugin
+import resources.lib.config.features as provider
+import xbmcaddon
 
 from resources.lib.di.featurebroker import features
 
 
 def bootstrap():
-    plugin = Plugin()
+    plugin = routing.Plugin()
     features.provide('plugin', plugin)
+    addon = xbmcaddon.Addon()
+    features.provide('addon', addon)
     provider.init_di()
     return plugin

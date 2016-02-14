@@ -1,6 +1,13 @@
-import resources.lib.config.bootstrap as bootstrapper
+import os
 
-from xbmcswift2 import xbmc, xbmcgui
+import xbmc
+import xbmcgui
+import routing
+import xbmcplugin
+
+from xbmcplugin import addDirectoryItem, endOfDirectory
+
+import resources.lib.config.bootstrap as bootstrapper
 
 from resources.lib.di.requiredfeature import RequiredFeature
 from resources.lib.model.game import Game
@@ -8,51 +15,49 @@ from resources.lib.views.gameinfo import GameInfo
 
 plugin = bootstrapper.bootstrap()
 
-addon_path = plugin.storage_path
-addon_internal_path = plugin.addon.getAddonInfo('path')
+addon = RequiredFeature('addon')
+
+addon_internal_path = addon.getAddonInfo('path')
+addon_path = xbmc.translatePath('special://profile/addon_data/%s/.storage/' % addon.getAddonInfo('id'))
+if not os.path.isdir(addon_path):
+    os.makedirs(addon_path)
 
 
 @plugin.route('/')
 def index():
     default_fanart_path = addon_internal_path + '/fanart.jpg'
 
-    items = [
-        {
-            'label': 'Games',
-            'thumbnail': addon_internal_path + '/resources/icons/controller.png',
-            'properties': {
-                    'fanart_image': default_fanart_path
-            },
-            'path': plugin.url_for(
-                        endpoint='show_games'
-                    )
-        }, {
-            'label': 'Settings',
-            'thumbnail': addon_internal_path + '/resources/icons/cog.png',
-            'properties': {
-                    'fanart_image': default_fanart_path
-            },
-            'path': plugin.url_for(
-                        endpoint='open_settings'
-                    )
-        }, {
-            'label': 'Check For Update',
-            'thumbnail': addon_internal_path + '/resources/icons/update.png',
-            'properties': {
-                    'fanart_image': default_fanart_path
-            },
-            'path': plugin.url_for(
-                        endpoint='check_update'
-                    )
-        }
-    ]
+    show_games_item = xbmcgui.ListItem(
+        label='Games',
+        iconImage=addon_internal_path + '/resources/icons/controller.png',
+        thumbnailImage=addon_internal_path + '/resources/icons/controller.png'
+    )
+    show_games_item.setArt({'fanart': default_fanart_path})
 
-    return plugin.finish(items)
+    open_settings_item = xbmcgui.ListItem(
+        label='Settings',
+        iconImage=addon_internal_path + '/resources/icons/cog.png',
+        thumbnailImage=addon_internal_path + '/resources/icons/cog.png'
+    )
+    open_settings_item.setArt({'fanart': default_fanart_path})
+
+    check_update_item = xbmcgui.ListItem(
+        label='Check For Update',
+        iconImage=addon_internal_path + '/resources/icons/update.png',
+        thumbnailImage=addon_internal_path + '/resources/icons/update.png'
+    )
+    check_update_item.setArt({'fanart': default_fanart_path})
+
+    addDirectoryItem(plugin.handle, plugin.url_for(show_games), show_games_item, True)
+    addDirectoryItem(plugin.handle, plugin.url_for(open_settings), open_settings_item)
+    addDirectoryItem(plugin.handle, plugin.url_for(check_update), check_update_item)
+
+    endOfDirectory(plugin.handle)
 
 
 @plugin.route('/settings')
 def open_settings():
-    plugin.open_settings()
+    addon.openSettings()
     core_monitor = RequiredFeature('core-monitor').request()
     core_monitor.onSettingsChanged()
     del core_monitor
@@ -115,8 +120,12 @@ def rollback_osmc_skin():
 @plugin.route('/games')
 def show_games():
     game_controller = RequiredFeature('game-controller').request()
-    plugin.set_content('movies')
-    return plugin.finish(game_controller.get_games_as_list(), sort_methods=['label'])
+    xbmcplugin.setContent(plugin.handle, 'movies')
+    games = game_controller.get_games_as_list()
+
+    xbmcplugin.addDirectoryItems(plugin.handle, games, len(games))
+    xbmcplugin.addSortMethod(plugin.handle, 'label')
+    xbmcplugin.endOfDirectory(plugin.handle)
 
 
 @plugin.route('/games/refresh')

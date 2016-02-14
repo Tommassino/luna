@@ -1,4 +1,5 @@
 import xbmcgui
+from addon import show_game_info, launch_game, open_settings, do_full_refresh
 from resources.lib.di.requiredfeature import RequiredFeature
 from resources.lib.model.game import Game
 
@@ -72,22 +73,15 @@ class GameController:
             return [
                 (
                     'Game Information',
-                    'XBMC.RunPlugin(%s)' % self.plugin.url_for(
-                            endpoint='show_game_info',
-                            game_id=game_id
-                    )
+                    'XBMC.RunPlugin(%s)' % self.plugin.url_for(show_game_info, game_id=game_id)
                 ),
                 (
                     self.core.string('addon_settings'),
-                    'XBMC.RunPlugin(%s)' % self.plugin.url_for(
-                            endpoint='open_settings'
-                    )
+                    'XBMC.RunPlugin(%s)' % self.plugin.url_for(open_settings)
                 ),
                 (
                     self.core.string('full_refresh'),
-                    'XBMC.RunPlugin(%s)' % self.plugin.url_for(
-                            endpoint='do_full_refresh'
-                    )
+                    'XBMC.RunPlugin(%s)' % self.plugin.url_for(do_full_refresh)
                 )
             ]
 
@@ -98,27 +92,27 @@ class GameController:
 
         items = []
         for i, game_name in enumerate(storage):
+            # TODO: Find a way to implement storage ...
             game = storage.get(game_name)
-            items.append({
-                'label': game.name,
-                'icon': game.get_selected_poster(),
-                'thumbnail': game.get_selected_poster(),
-                'info': {
+
+            game_item = xbmcgui.ListItem(
+                label=game.name,
+                iconImage=game.get_selected_poster(),
+                thumbnailImage=game.get_selected_poster(),
+                path=self.plugin.url_for(launch_game, game_id=game.name)
+            )
+
+            game_item.setInfo('video', {
                     'year': game.year,
                     'plot': game.plot,
                     'genre': game.get_genre_as_string(),
                     'originaltitle': game.name,
-                },
-                'replace_context_menu': True,
-                'context_menu': context_menu(game_name),
-                'path': self.plugin.url_for(
-                        endpoint='launch_game',
-                        game_id=game.name
-                ),
-                'properties': {
-                    'fanart_image': game.get_selected_fanart().get_original()
-                }
-            })
+                })
+
+            game_item.setArt({'fanart': game.get_selected_fanart().get_original()})
+            game_item.addContextMenuItems(context_menu(game_name), True)
+
+            items.append(game_item)
 
         return items
 

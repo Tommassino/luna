@@ -24,6 +24,7 @@ Screenshots can be found on the [Wiki](https://github.com/wackerl91/luna/wiki)
 ## Issues
 - Controller Mapping sometimes not working
 - Please keep in mind that Luna - while I guess it's working pretty good right now - is still alpha, so don't expect it to work perfectly
+- Transitioning away from XBMCSwift2 broke all the tests, those need to be re-written on a very low level
 
 ## Credits
 - Logo and Fanart by [Ben Biedrawa](http://sooulart.com)
