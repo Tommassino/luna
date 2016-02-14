@@ -1,9 +1,9 @@
 import os
 
 import pyxbmct.addonwindow as pyxbmct
-
-from xbmcswift2 import xbmc, xbmcaddon, xbmcgui
-
+import xbmc
+import xbmcaddon
+import xbmcgui
 from resources.lib.di.requiredfeature import RequiredFeature
 
 _addon_path = xbmcaddon.Addon().getAddonInfo('path')
@@ -112,14 +112,14 @@ class GameInfo(pyxbmct.AddonDialogWindow):
                                           self.game.get_selected_fanart().get_thumb())
         if browser:
             self.game.set_selected_fanart(browser)
-            self.core.get_storage().sync()
+            self.core.get_storage('game_storage').sync()
 
     def select_cover_art(self):
         browser = xbmcgui.Dialog().browse(2, 'Select Cover Art', 'files', '.jpg|.png', False, False,
                                           self.game.get_poster(0, ''))
         if browser:
             self.game.selected_poster = browser
-            self.core.get_storage().sync()
+            self.core.get_storage('game_storage').sync()
             self.image = pyxbmct.Image(browser)
             self.placeControl(self.image, 2, 0, 6, 1)
 

@@ -1,11 +1,12 @@
 import json
 import os
-import urllib2
-
 import re
+import urllib2
 import zipfile
 
-from xbmcswift2 import xbmcaddon, xbmcgui, xbmc
+import xbmc
+import xbmcaddon
+import xbmcgui
 
 from resources.lib.di.component import Component
 from resources.lib.di.requiredfeature import RequiredFeature
@@ -29,7 +30,7 @@ class UpdateService(Component):
         self.changelog = None
 
     def check_for_update(self, ignore_checked=False):
-        update_storage = self.plugin.get_storage('update', TTL=60)
+        update_storage = {}  # self.plugin.get_storage('update', TTL=60)
         update = None
         if not update_storage.get('checked') or ignore_checked:
             response = json.load(urllib2.urlopen(self.api_url))

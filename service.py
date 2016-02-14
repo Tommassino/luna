@@ -10,11 +10,11 @@ if __name__ == '__main__':
         plugin = bootstrapper.bootstrap()
         WINDOW = xbmcgui.Window(10000)
         core = RequiredFeature('core').request()
-        storage = core.get_storage()
+        storage = core.get_storage('game_storage')
 
         sorted_list = sorted(storage.raw_dict().keys())
 
-        sorted_storage = plugin.get_storage('sorted_game_storage')
+        sorted_storage = core.get_storage('sorted_game_storage')
         sorted_storage.clear()
 
         for i, game_name in enumerate(sorted_list):

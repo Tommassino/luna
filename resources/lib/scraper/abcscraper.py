@@ -10,7 +10,7 @@ class AbstractScraper:
     __metaclass__ = ABCMeta
 
     def __init__(self):
-        self.base_path = RequiredFeature('plugin').request().storage_path
+        self.base_path = RequiredFeature('core').request().get_storage_path()
 
     @abstractmethod
     def get_game_information(self, game_name):

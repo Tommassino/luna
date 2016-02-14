@@ -15,7 +15,7 @@ from resources.lib.views.gameinfo import GameInfo
 
 plugin = bootstrapper.bootstrap()
 
-addon = RequiredFeature('addon')
+addon = RequiredFeature('addon').request()
 
 addon_internal_path = addon.getAddonInfo('path')
 addon_path = xbmc.translatePath('special://profile/addon_data/%s/.storage/' % addon.getAddonInfo('id'))
@@ -124,7 +124,7 @@ def show_games():
     games = game_controller.get_games_as_list()
 
     xbmcplugin.addDirectoryItems(plugin.handle, games, len(games))
-    xbmcplugin.addSortMethod(plugin.handle, 'label')
+    xbmcplugin.addSortMethod(plugin.handle, xbmcplugin.SORT_METHOD_LABEL)
     xbmcplugin.endOfDirectory(plugin.handle)
 
 
@@ -138,7 +138,7 @@ def do_full_refresh():
 @plugin.route('/games/info/<game_id>')
 def show_game_info(game_id):
     core = RequiredFeature('core').request()
-    game = core.get_storage().get(game_id)
+    game = core.get_storage('game_storage').get(game_id)
     cache_fanart = game.get_selected_fanart()
     cache_poster = game.get_selected_poster()
     window = GameInfo(game, game.name)
@@ -164,7 +164,7 @@ def launch_game(game_id):
 def launch_game_from_widget(xml_id):
     core = RequiredFeature('core').request()
     game_id = int(xml_id)
-    internal_game_id = plugin.get_storage('sorted_game_storage').get(game_id)
+    internal_game_id = core.get_storage('sorted_game_storage').get(game_id)
 
     game_controller = RequiredFeature('game-controller').request()
     core.logger.info('Launching game %s' % internal_game_id)
@@ -180,21 +180,21 @@ if __name__ == '__main__':
     updater.check_for_update()
     del updater
 
-    if plugin.get_setting('host', str):
+    if addon.getSetting('host'):
         config_helper = RequiredFeature('config-helper').request()
         config_helper.configure()
 
         game_refresh_required = False
 
         try:
-            if plugin.get_storage('game_version')['version'] != Game.version:
+            if core.get_storage('game_version')['version'] != Game.version:
                 game_refresh_required = True
         except KeyError:
             game_refresh_required = True
 
         if game_refresh_required:
             game_controller = RequiredFeature('game-controller').request()
-            game_controller.get_games()
+            # game_controller.get_games()
             del game_controller
 
         plugin.run()

@@ -1,18 +1,19 @@
+import xbmc
 from resources.lib.di.component import Component
 from resources.lib.di.requiredfeature import RequiredFeature
 
 
 class Logger(Component):
-    plugin = RequiredFeature('plugin')
+    addon = RequiredFeature('addon')
 
     def __init__(self):
-        pass
+        self.prefix = self.addon.getAddonInfo('id')
 
     def info(self, text):
-        self.plugin.log.info(text)
+        xbmc.log('[%s] %s' % (self.prefix, text), 2)
 
     def debug(self, text):
-        self.plugin.log.debug(text)
+        xbmc.log('[%s] %s' % (self.prefix, text), 0)
 
     def error(self, text):
-        self.plugin.log.error(text)
+        xbmc.log('[%s] %s' % (self.prefix, text), 4)

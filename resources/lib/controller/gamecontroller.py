@@ -1,5 +1,5 @@
 import xbmcgui
-from addon import show_game_info, launch_game, open_settings, do_full_refresh
+
 from resources.lib.di.requiredfeature import RequiredFeature
 from resources.lib.model.game import Game
 
@@ -28,7 +28,7 @@ class GameController:
 
         bar_movement = int(1.0 / len(game_list) * 100)
 
-        storage = self.core.get_storage()
+        storage = self.core.get_storage('game_storage')
         cache = storage.raw_dict().copy()
         storage.clear()
 
@@ -37,7 +37,8 @@ class GameController:
             progress_dialog.update(bar_movement * i, 'Processing: %s' % game_name, '')
             if self.plugin.get_setting('disable_scraper', bool):
                 self.logger.info('Scraper have been disabled, just adding game names to list.')
-                progress_dialog.update(bar_movement * i, line2='Scrapers have been disabled, just adding game names to list.')
+                progress_dialog.update(bar_movement * i,
+                                       line2='Scrapers have been disabled, just adding game names to list.')
                 storage[game_name] = Game(game_name, None)
             else:
                 if game_name in cache:
@@ -56,7 +57,7 @@ class GameController:
                         storage[game_name] = Game(game_name, None)
             i += 1
 
-        game_version_storage = self.plugin.get_storage('game_version')
+        game_version_storage = self.core.get_storage('game_version')
         game_version_storage.clear()
         game_version_storage['version'] = Game.version
 
@@ -73,19 +74,19 @@ class GameController:
             return [
                 (
                     'Game Information',
-                    'XBMC.RunPlugin(%s)' % self.plugin.url_for(show_game_info, game_id=game_id)
+                    'XBMC.RunPlugin(%s)' % self.plugin.url_for_path('/games/info/%s' % game_id)
                 ),
                 (
                     self.core.string('addon_settings'),
-                    'XBMC.RunPlugin(%s)' % self.plugin.url_for(open_settings)
+                    'XBMC.RunPlugin(%s)' % self.plugin.url_for_path('/settings')
                 ),
                 (
                     self.core.string('full_refresh'),
-                    'XBMC.RunPlugin(%s)' % self.plugin.url_for(do_full_refresh)
+                    'XBMC.RunPlugin(%s)' % self.plugin.url_for_path('/games/refresh')
                 )
             ]
 
-        storage = self.core.get_storage()
+        storage = self.core.get_storage('game_storage')
 
         if len(storage.raw_dict()) == 0:
             self.get_games()
@@ -95,11 +96,13 @@ class GameController:
             # TODO: Find a way to implement storage ...
             game = storage.get(game_name)
 
+            path = self.plugin.url_for_path('/games/launch/%s' % game.name)
+
             game_item = xbmcgui.ListItem(
                 label=game.name,
                 iconImage=game.get_selected_poster(),
                 thumbnailImage=game.get_selected_poster(),
-                path=self.plugin.url_for(launch_game, game_id=game.name)
+                path=path
             )
 
             game_item.setInfo('video', {
@@ -112,7 +115,7 @@ class GameController:
             game_item.setArt({'fanart': game.get_selected_fanart().get_original()})
             game_item.addContextMenuItems(context_menu(game_name), True)
 
-            items.append(game_item)
+            items.append((path, game_item, True))
 
         return items
 

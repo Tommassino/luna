@@ -18,7 +18,7 @@ def init_di():
     from resources.lib.util.skinpatcher import SkinPatcher
 
     features.provide('logger', Logger)
-    features.provide('core', Core)
+    features.provide('core', Core())
     features.provide('config-helper', ConfigHelper)
     features.provide('core-monitor', CoreMonitor)
     features.provide('moonlight-helper', MoonlightHelper)

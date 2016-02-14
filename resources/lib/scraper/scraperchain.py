@@ -11,6 +11,7 @@ from resources.lib.scraper.abcscraper import AbstractScraper
 class ScraperChain(Component):
     plugin = RequiredFeature('plugin')
     logger = RequiredFeature('logger')
+    core = RequiredFeature('core')
 
     def __init__(self):
         self.scraper_chain = []
@@ -47,7 +48,7 @@ class ScraperChain(Component):
         return game
 
     def reset_cache(self):
-        self.plugin.get_storage('game_storage').clear()
+        self.core.get_storage('game_storage').clear()
 
         paths = []
         for scraper in self.scraper_chain:

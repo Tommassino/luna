@@ -2,8 +2,8 @@ import os
 import subprocess
 import threading
 
-from xbmcswift2 import xbmc, xbmcaddon
-
+import xbmc
+import xbmcaddon
 from resources.lib.di.component import Component
 from resources.lib.di.requiredfeature import RequiredFeature
 

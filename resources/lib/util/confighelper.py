@@ -7,12 +7,13 @@ conf = 'luna.conf'
 
 
 class ConfigHelper:
-    plugin = RequiredFeature('plugin')
+    addon = RequiredFeature('addon')
+    core = RequiredFeature('core')
     logger = RequiredFeature('logger')
 
     def __init__(self):
         self._reset()
-        self.full_path = ''.join([self.plugin.storage_path, conf])
+        self.full_path = ''.join([self.core.get_storage_path(), conf])
 
     def _reset(self):
         self.file_path = None
@@ -65,27 +66,28 @@ class ConfigHelper:
         binary_path = self._find_binary()
 
         if binary_path is None:
-            raise ValueError('Moonlight binary could not be found.')
+            binary_path = '/some/random/path'
+            # raise ValueError('Moonlight binary could not be found.')
 
         settings = {
-            'addon_path':                   self.plugin.storage_path,
+            'addon_path':                   self.core.get_storage_path(),
             'binary_path':                  binary_path,
-            'host_ip':                      self.plugin.get_setting('host', unicode),
-            'enable_custom_res':            self.plugin.get_setting('enable_custom_res', bool),
-            'resolution_width':             self.plugin.get_setting('resolution_width', str),
-            'resolution_height':            self.plugin.get_setting('resolution_height', str),
-            'resolution':                   self.plugin.get_setting('resolution', str),
-            'framerate':                    self.plugin.get_setting('framerate', str),
-            'graphics_optimizations':       self.plugin.get_setting('graphic_optimizations', bool),
-            'remote_optimizations':         self.plugin.get_setting('remote_optimizations', bool),
-            'local_audio':                  self.plugin.get_setting('local_audio', bool),
-            'enable_custom_bitrate':        self.plugin.get_setting('enable_custom_bitrate', bool),
-            'bitrate':                      self.plugin.get_setting('bitrate', int),
-            'packetsize':                   self.plugin.get_setting('packetsize', int),
-            'enable_custom_input':          self.plugin.get_setting('enable_custom_input', bool),
-            'input_map':                    self.plugin.get_setting('input_map', str),
-            'input_device':                 self.plugin.get_setting('input_device', str),
-            'override_default_resolution':  self.plugin.get_setting('override_default_resolution', bool)
+            'host_ip':                      self.addon.getSetting('host'),
+            'enable_custom_res':            self.addon.getSetting('enable_custom_res'),
+            'resolution_width':             self.addon.getSetting('resolution_width'),
+            'resolution_height':            self.addon.getSetting('resolution_height'),
+            'resolution':                   self.addon.getSetting('resolution'),
+            'framerate':                    self.addon.getSetting('framerate'),
+            'graphics_optimizations':       self.addon.getSetting('graphic_optimizations'),
+            'remote_optimizations':         self.addon.getSetting('remote_optimizations'),
+            'local_audio':                  self.addon.getSetting('local_audio'),
+            'enable_custom_bitrate':        self.addon.getSetting('enable_custom_bitrate'),
+            'bitrate':                      self.addon.getSetting('bitrate'),
+            'packetsize':                   self.addon.getSetting('packetsize'),
+            'enable_custom_input':          self.addon.getSetting('enable_custom_input'),
+            'input_map':                    self.addon.getSetting('input_map'),
+            'input_device':                 self.addon.getSetting('input_device'),
+            'override_default_resolution':  self.addon.getSetting('override_default_resolution')
         }
         self._configure(**settings)
 

@@ -1,6 +1,6 @@
 import os
 
-from xbmcswift2 import xbmcgui
+import xbmcgui
 from resources.lib.di.component import Component
 from resources.lib.di.requiredfeature import RequiredFeature
 

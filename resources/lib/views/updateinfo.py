@@ -2,7 +2,7 @@ import os
 
 import pyxbmct.addonwindow as pyxbmct
 
-from xbmcswift2 import xbmcaddon
+import xbmcaddon
 
 from resources.lib.di.requiredfeature import RequiredFeature
 
