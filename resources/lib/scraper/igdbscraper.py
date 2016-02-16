@@ -13,6 +13,7 @@ class IgdbScraper(AbstractScraper):
     def __init__(self):
         AbstractScraper.__init__(self)
         self.plugin = RequiredFeature('plugin').request()
+        self.addon = RequiredFeature('addon').request()
         self.api_url = 'https://www.igdb.com/api/v1/games/%s'
         self.api_img_url = 'https://res.cloudinary.com/igdb/image/upload/t_%s/%s.jpg'
         self.cover_cache = self._set_up_path(os.path.join(self.base_path, 'art/poster/'))
@@ -32,7 +33,7 @@ class IgdbScraper(AbstractScraper):
         return [self.cover_cache, self.api_cache]
 
     def is_enabled(self):
-        return self.plugin.get_setting('enable_igdb', bool)
+        return self.addon.getSetting('enable_igdb') == 'true'
 
     def _gather_information(self, game):
         game_cover_path = self._set_up_path(os.path.join(self.cover_cache, game))

@@ -74,10 +74,10 @@ class Core(Component):
             if TTL:
                 TTL = timedelta(minutes=TTL)
             try:
-                storage = TimedStorage(filename, TTL)
+                storage = TimedStorage(filename=filename, TTL=TTL)
             except ValueError:
                 os.remove(filename)
-                storage = TimedStorage(filename, TTL)
+                storage = TimedStorage(filename=filename, TTL=TTL)
 
             self._unsynced_storages[filename] = storage
         return storage

@@ -177,7 +177,7 @@ if __name__ == '__main__':
     core = RequiredFeature('core').request()
     updater = RequiredFeature('update-service').request()
     core.check_script_permissions()
-    updater.check_for_update()
+    # updater.check_for_update()
     del updater
 
     if addon.getSetting('host'):

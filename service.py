@@ -5,9 +5,12 @@ __addon__ = xbmcaddon.Addon()
 if __name__ == '__main__':
     if __addon__.getSetting("luna_widget_enable") == 'true':
         import resources.lib.config.bootstrap as bootstrapper
-        from xbmcswift2 import xbmcgui
+        try:
+            bootstrapper.bootstrap()
+        except IndexError:
+            pass
+        import xbmcgui
         from resources.lib.di.requiredfeature import RequiredFeature
-        plugin = bootstrapper.bootstrap()
         WINDOW = xbmcgui.Window(10000)
         core = RequiredFeature('core').request()
         storage = core.get_storage('game_storage')

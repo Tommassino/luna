@@ -11,6 +11,7 @@ class OmdbScraper(AbstractScraper):
     def __init__(self):
         AbstractScraper.__init__(self)
         self.plugin = RequiredFeature('plugin').request()
+        self.addon = RequiredFeature('addon').request()
         self.api_url = 'http://www.omdbapi.com/?t=%s&plot=short&r=json&type=game'
         self.cover_cache = self._set_up_path(os.path.join(self.base_path, 'art/poster/'))
         self.api_cache = self._set_up_path(os.path.join(self.base_path, 'api_cache/'))
@@ -25,7 +26,7 @@ class OmdbScraper(AbstractScraper):
         return [self.cover_cache, self.api_cache]
 
     def is_enabled(self):
-        return self.plugin.get_setting('enable_omdb', bool)
+        return self.addon.getSetting('enable_omdb') == 'true'
 
     def _gather_information(self, game):
         game_cover_path = self._set_up_path(os.path.join(self.cover_cache, game))

@@ -7,6 +7,7 @@ from resources.lib.model.game import Game
 class GameController:
     plugin = RequiredFeature('plugin')
     core = RequiredFeature('core')
+    addon = RequiredFeature('addon')
     moonlight_helper = RequiredFeature('moonlight-helper')
     scraper_chain = RequiredFeature('scraper-chain')
     logger = RequiredFeature('logger')
@@ -35,7 +36,7 @@ class GameController:
         i = 1
         for game_name in game_list:
             progress_dialog.update(bar_movement * i, 'Processing: %s' % game_name, '')
-            if self.plugin.get_setting('disable_scraper', bool):
+            if self.addon.getSetting('disable_scraper') == 'true':
                 self.logger.info('Scraper have been disabled, just adding game names to list.')
                 progress_dialog.update(bar_movement * i,
                                        line2='Scrapers have been disabled, just adding game names to list.')

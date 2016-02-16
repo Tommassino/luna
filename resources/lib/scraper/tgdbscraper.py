@@ -14,6 +14,7 @@ class TgdbScraper(AbstractScraper):
     def __init__(self):
         AbstractScraper.__init__(self)
         self.plugin = RequiredFeature('plugin').request()
+        self.addon = RequiredFeature('addon').request()
         self.api_url = 'http://thegamesdb.net/api/GetGame.php?name=%s'
         self.cover_cache = self._set_up_path(os.path.join(self.base_path, 'art/poster/'))
         self.fanart_cache = self._set_up_path(os.path.join(self.base_path, 'art/fanart/'))
@@ -29,7 +30,7 @@ class TgdbScraper(AbstractScraper):
         return [self.cover_cache, self.fanart_cache, self.api_cache]
 
     def is_enabled(self):
-        return self.plugin.get_setting('enable_tgdb', bool)
+        return self.addon.getSetting('enable_tgdb') == 'true'
 
     def _gather_information(self, game):
         game_cover_path = self._set_up_path(os.path.join(self.cover_cache, game))
